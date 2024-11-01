@@ -1,9 +1,11 @@
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 
-const setup = () => {
-  if (!process.env.DATABASE_URL) {
-    console.error("DATABASE_URL is not set");
+const setupDatabase = () => {
+  const databaseUrl = process.env.DATABASE_URL;
+
+  if (!databaseUrl) {
+    console.error("Error: DATABASE_URL environment variable is not set.");
     return {
       select: () => ({
         from: () => [],
@@ -11,10 +13,20 @@ const setup = () => {
     };
   }
 
-  // for query purposes
-  const queryClient = postgres(process.env.DATABASE_URL);
-  const db = drizzle(queryClient);
-  return db;
+  try {
+    const queryClient = postgres(databaseUrl);
+    const db = drizzle(queryClient);
+    return db;
+  } catch (error) {
+    console.error("Error connecting to the database:", error);
+    return {
+      select: () => ({
+        from: () => [],
+      }),
+    };
+  }
 };
 
-export default setup();
+// Export the database instance
+const dbInstance = setupDatabase();
+export default dbInstance;
