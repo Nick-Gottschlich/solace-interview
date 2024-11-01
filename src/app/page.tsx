@@ -30,17 +30,24 @@ export default function Home() {
   }, []);
 
   const filteredAdvocates = useMemo(() => {
-    return advocates.filter((advocate) => {
-      return (
-        advocate.firstName.includes(searchTerm) ||
-        advocate.lastName.includes(searchTerm) ||
-        advocate.city.includes(searchTerm) ||
-        advocate.degree.includes(searchTerm) ||
-        advocate.specialties.some((specialty) => specialty.includes(searchTerm)) || 
-        advocate.yearsOfExperience.toString().includes(searchTerm) 
-      );
-    });
-  }, [advocates, searchTerm]);
+  return advocates.filter((advocate) => {
+    const lowerCaseSearchTerm = searchTerm.toLowerCase();
+
+    return (
+      advocate.firstName.toLowerCase().includes(lowerCaseSearchTerm) || 
+      advocate.lastName.toLowerCase().includes(lowerCaseSearchTerm) || 
+      advocate.city.toLowerCase().includes(lowerCaseSearchTerm) || 
+      advocate.degree.toLowerCase().includes(lowerCaseSearchTerm) || 
+      advocate.specialties.some((specialty) =>
+        specialty.toLowerCase().includes(lowerCaseSearchTerm) 
+      ) ||
+      advocate.yearsOfExperience.toString().includes(lowerCaseSearchTerm) || 
+      advocate.phoneNumber.toString().includes(searchTerm) 
+    );
+  });
+}, [advocates, searchTerm]);
+
+
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
